@@ -49,11 +49,12 @@ maklercourtage = st.number_input("Maklercourtage (in %):", min_value=0.0, max_va
 if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
     notarkosten = grundstueckspreis * (notarkosten_prozent / 100)
     grunderwerbssteuer = grundstueckspreis * (grunderwerbssteuer_prozent / 100)
+    maklerkosten = grundstueckspreis * (maklercourtage / 100)
 else:
     notarkosten = kaufpreis * (notarkosten_prozent / 100)
     grunderwerbssteuer = kaufpreis * (grunderwerbssteuer_prozent / 100)
+    maklerkosten = kaufpreis * (maklercourtage / 100)
 
-maklerkosten = kaufpreis * (maklercourtage / 100)
 nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
 
 # Weitere Kosten
@@ -74,6 +75,8 @@ else:
 # Eigenkapital und Bausparvertrag
 st.markdown("### Schritt 4: Eigenkapital und Bausparvertrag")
 eigenkapital = st.number_input("Eigenkapital (€):", min_value=0.0, step=1000.0)
+
+eigenkapitalanteil = (eigenkapital / finanzierungsbedarf_vor_abzuegen) * 100
 
 bausparer_option = st.radio("Möchten Sie einen Bausparvertrag einbringen?", ("Ja", "Nein"))
 if bausparer_option == "Ja":
@@ -107,6 +110,7 @@ if st.button("Ergebnis anzeigen"):
     st.markdown("## 📝 Ergebnis")
     st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {finanzierungsbedarf_vor_abzuegen:,.2f} €")
     st.markdown(f"**Eigenkapital (inkl. ggf. Bausparvertrag):** {eigenkapital:,.2f} €")
+    st.markdown(f"**Eigenkapitalanteil:** {eigenkapitalanteil:.2f}%")
     if bausparer_option == "Ja" and bauspar_zuteilungsreif == "Ja":
         st.markdown(f"**Bauspardarlehen:** {bauspar_darlehen:,.2f} €")
     st.markdown(f"**Weitere Darlehen:** {andere_darlehen:,.2f} €")
@@ -126,4 +130,5 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
