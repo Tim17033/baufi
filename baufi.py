@@ -85,10 +85,8 @@ if bausparer_option == "Ja":
         bauspar_darlehen = bausparsumme - angespart
         bauspar_inanspruchnahme = st.radio("Möchten Sie das Bauspardarlehen in Anspruch nehmen?", ("Ja", "Nein"))
         if bauspar_inanspruchnahme == "Ja":
-            finanzierungsbedarf_vor_abzuegen -= angespart  # Nur den angesparten Betrag berücksichtigen
-            eigenkapital += angespart
+            eigenkapital += angespart  # Angesparter Teil fließt ins Eigenkapital
         else:
-            finanzierungsbedarf_vor_abzuegen -= angespart
             eigenkapital += angespart
     else:
         st.info("Der Bausparvertrag wird nicht in die Finanzierung einbezogen.")
@@ -131,6 +129,7 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
 
 
