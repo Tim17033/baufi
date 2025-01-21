@@ -94,7 +94,7 @@ finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen - eigenkapital
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
     st.markdown("## 📝 Ergebnis")
-    st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
+    st.markdown(f"**Finanzierungsbedarf (inkl. Nebenkosten & Co.):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
     st.markdown(f"**Eigenkapital:** {eigenkapital:,.2f} €")
     st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
     st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
@@ -113,4 +113,5 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
