@@ -100,12 +100,16 @@ if bausparer_option == "Ja":
     bausparsumme = st.number_input("Bausparsumme (€):", min_value=0.0, step=1000.0, format="%.2f")
     finanzierungsbedarf_vor_abzuegen -= bausparsumme
 
-# Eigenkapitalanteil berechnen
-urspruenglicher_finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen
-eigenkapitalanteil = (eigenkapital / urspruenglicher_finanzierungsbedarf) * 100
+# Prüfen, ob der ursprüngliche Finanzierungsbedarf größer als 0 ist
+if finanzierungsbedarf_vor_abzuegen > 0:
+    urspruenglicher_finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen
+    eigenkapitalanteil = (eigenkapital / urspruenglicher_finanzierungsbedarf) * 100
+else:
+    urspruenglicher_finanzierungsbedarf = 0
+    eigenkapitalanteil = 0
 
 # Endgültiger Finanzierungsbedarf
-finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen - eigenkapital
+finanzierungsbedarf = max(urspruenglicher_finanzierungsbedarf - eigenkapital, 0)
 
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
@@ -115,4 +119,5 @@ if st.button("Ergebnis anzeigen"):
     st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
     st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
     st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+
 
