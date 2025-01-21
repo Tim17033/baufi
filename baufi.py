@@ -55,7 +55,7 @@ else:
     grunderwerbssteuer = kaufpreis * (grunderwerbssteuer_prozent / 100)
     maklerkosten = kaufpreis * (maklercourtage / 100)
 
-nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
+nebenkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
 
 # Weitere Kosten
 st.markdown("### Schritt 3: Zusätzliche Kosten eingeben")
@@ -68,9 +68,9 @@ weitere_kosten_summe = erschliessungskosten + hausanschlusskosten + renovierungs
 
 # Gesamtkosten berechnen
 if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
-    finanzierungsbedarf_vor_abzuegen = grundstueckspreis + bebauungskosten + nebkosten_summe + weitere_kosten_summe
+    finanzierungsbedarf_vor_abzuegen = grundstueckspreis + bebauungskosten + nebenkosten_summe + weitere_kosten_summe
 else:
-    finanzierungsbedarf_vor_abzuegen = kaufpreis + nebkosten_summe + weitere_kosten_summe
+    finanzierungsbedarf_vor_abzuegen = kaufpreis + nebenkosten_summe + weitere_kosten_summe
 
 # Eigenkapital
 st.markdown("### Schritt 4: Eigenkapital")
@@ -85,7 +85,6 @@ if bausparer_option == "Ja":
 
 # Eigenkapitalanteil berechnen
 urspruenglicher_finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen
-
 eigenkapitalanteil = (eigenkapital / urspruenglicher_finanzierungsbedarf) * 100
 
 # Endgültiger Finanzierungsbedarf
@@ -103,7 +102,7 @@ if st.button("Ergebnis anzeigen"):
     # Visualisierung
     labels = ["Nebenkosten", "Weitere Kosten", "Eigenkapital", "Darlehen"]
     sizes = [
-        nebkosten_summe,
+        nebenkosten_summe,
         weitere_kosten_summe,
         eigenkapital,
         finanzierungsbedarf
@@ -113,5 +112,6 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
 
