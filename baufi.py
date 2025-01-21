@@ -27,10 +27,10 @@ st.caption("Wählen Sie den Immobilientyp, um die Nebenkosten korrekt zu berechn
 # Eingabe des Kaufpreises
 if immobilientyp == "Neubau":
     neubau_typ = st.radio(
-        "Handelt es sich um einen Neubau vom Bauträger oder einen Neubau mit Grundstückskauf?",
-        ("Neubau vom Bauträger", "Neubau mit Grundstückskauf")
+        "Handelt es sich um einen Neubau vom Bauträger oder um Neubau und Grundstückskauf separat?",
+        ("Neubau vom Bauträger", "Neubau und Grundstückskauf separat")
     )
-    if neubau_typ == "Neubau mit Grundstückskauf":
+    if neubau_typ == "Neubau und Grundstückskauf separat":
         grundstueckspreis = st.number_input("Kaufpreis des Grundstücks (€):", min_value=0.0, step=1000.0)
         bebauungskosten = st.number_input("Kosten für die Bebauung (€):", min_value=0.0, step=1000.0)
     else:
@@ -46,7 +46,7 @@ notarkosten_prozent = 2.0
 grunderwerbssteuer_prozent = 6.0
 maklercourtage = st.number_input("Maklercourtage (in %):", min_value=0.0, max_value=10.0, step=0.1)
 
-if immobilientyp == "Neubau" and neubau_typ == "Neubau mit Grundstückskauf":
+if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
     notarkosten = grundstueckspreis * (notarkosten_prozent / 100)
     grunderwerbssteuer = grundstueckspreis * (grunderwerbssteuer_prozent / 100)
 else:
@@ -68,7 +68,7 @@ st.markdown("### Berechnung des Finanzierungsbedarfs")
 nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
 weitere_kosten_summe = erschließungskosten + hausanschlusskosten + renovierungskosten + kueche_kosten + außenanlagen_kosten
 
-if immobilientyp == "Neubau" and neubau_typ == "Neubau mit Grundstückskauf":
+if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
     finanzierungsbedarf = grundstueckspreis + bebauungskosten + nebkosten_summe + weitere_kosten_summe
 else:
     finanzierungsbedarf = kaufpreis + nebkosten_summe + weitere_kosten_summe
@@ -119,3 +119,4 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
