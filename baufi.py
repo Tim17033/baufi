@@ -54,6 +54,7 @@ else:
     grunderwerbssteuer = kaufpreis * (grunderwerbssteuer_prozent / 100)
 
 maklerkosten = kaufpreis * (maklercourtage / 100)
+nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
 
 # Weitere Kosten
 st.markdown("### Schritt 3: Zusätzliche Kosten eingeben")
@@ -62,16 +63,13 @@ hausanschlusskosten = st.number_input("Hausanschlusskosten (€):", min_value=0.
 renovierungskosten = st.number_input("Renovierungs-/Modernisierungskosten (€):", min_value=0.0, step=1000.0)
 kueche_kosten = st.number_input("Kosten für Küche (€):", min_value=0.0, step=1000.0)
 aussenanlagen_kosten = st.number_input("Kosten für Außenanlagen (€):", min_value=0.0, step=1000.0)
-
-# Gesamtkosten berechnen
-st.markdown("### Berechnung des Finanzierungsbedarfs")
-nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
 weitere_kosten_summe = erschliessungskosten + hausanschlusskosten + renovierungskosten + kueche_kosten + aussenanlagen_kosten
 
+# Gesamtkosten berechnen
 if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
-    finanzierungsbedarf = grundstueckspreis + bebauungskosten + nebkosten_summe + weitere_kosten_summe
+    finanzierungsbedarf_vor_abzuegen = grundstueckspreis + bebauungskosten + nebkosten_summe + weitere_kosten_summe
 else:
-    finanzierungsbedarf = kaufpreis + nebkosten_summe + weitere_kosten_summe
+    finanzierungsbedarf_vor_abzuegen = kaufpreis + nebkosten_summe + weitere_kosten_summe
 
 # Eigenkapital und Bausparvertrag
 st.markdown("### Schritt 4: Eigenkapital und Bausparvertrag")
@@ -88,10 +86,10 @@ if bausparer_option == "Ja":
         bauspar_tilgungssatz = st.number_input("Tilgungssatz des Bauspardarlehens (Promille):", min_value=0.0, step=0.1)
         bauspar_inanspruchnahme = st.radio("Möchten Sie das Bauspardarlehen in Anspruch nehmen?", ("Ja", "Nein"))
         if bauspar_inanspruchnahme == "Ja":
-            finanzierungsbedarf -= bausparsumme
+            finanzierungsbedarf_vor_abzuegen -= bausparsumme
             eigenkapital += angespart
         else:
-            finanzierungsbedarf -= angespart
+            finanzierungsbedarf_vor_abzuegen -= angespart
             eigenkapital += angespart
     else:
         st.info("Der Bausparvertrag wird nicht in die Finanzierung einbezogen.")
@@ -99,17 +97,21 @@ if bausparer_option == "Ja":
 # Andere Darlehen
 st.markdown("### Schritt 5: Weitere Darlehen")
 andere_darlehen = st.number_input("Haben Sie weitere Darlehen aufgenommen? Falls ja, bitte Betrag eingeben (€):", min_value=0.0, step=1000.0)
-finanzierungsbedarf -= andere_darlehen
+finanzierungsbedarf_vor_abzuegen -= andere_darlehen
+
+# Endgültiger Finanzierungsbedarf
+finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen - eigenkapital
 
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
     st.markdown("## 📝 Ergebnis")
-    st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {finanzierungsbedarf:,.2f} €")
+    st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {finanzierungsbedarf_vor_abzuegen:,.2f} €")
     st.markdown(f"**Eigenkapital (inkl. ggf. Bausparvertrag):** {eigenkapital:,.2f} €")
     if bausparer_option == "Ja" and bauspar_zuteilungsreif == "Ja":
         st.markdown(f"**Bauspardarlehen:** {bauspar_darlehen:,.2f} €")
     st.markdown(f"**Weitere Darlehen:** {andere_darlehen:,.2f} €")
-    st.markdown(f"**Finanzierungsbedarf (aufgerundet):** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+    st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
+    st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
 
     # Visualisierung
     labels = ["Nebenkosten", "Weitere Kosten", "Eigenkapital", "Darlehen"]
@@ -117,13 +119,10 @@ if st.button("Ergebnis anzeigen"):
         nebkosten_summe,
         weitere_kosten_summe,
         eigenkapital,
-        finanzierungsbedarf - eigenkapital - nebkosten_summe - weitere_kosten_summe
+        finanzierungsbedarf
     ]
     fig, ax = plt.subplots()
     ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90)
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
-
-
-
