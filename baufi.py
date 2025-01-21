@@ -6,12 +6,12 @@ def runde_auf_1000(betrag):
     return math.ceil(betrag / 1000) * 1000
 
 # Titel und Einleitung
-st.title("🏠 Baufinanzierungsrechner - Teil 1")
+st.title("🏠 Finanzierungsbedarfsrechner")
 st.markdown(
     """
-    **Ermittlung des Finanzierungsbedarfs:**
-    Geben Sie die relevanten Informationen zu Ihrer Immobilie, den Nebenkosten und weiteren Ausgaben ein.
-    Danach wird Ihr gesamter Finanzierungsbedarf berechnet.
+    Willkommen zum **Finanzierungsbedarfsrechner**!  
+    Geben Sie die relevanten Informationen zu Ihrer Immobilie, den Nebenkosten und weiteren Ausgaben ein.  
+    Ihr gesamter Finanzierungsbedarf wird anschließend für Sie berechnet.
     """
 )
 
@@ -113,11 +113,13 @@ finanzierungsbedarf = max(urspruenglicher_finanzierungsbedarf - eigenkapital, 0)
 
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
-    st.markdown("## 📝 Ergebnis")
-    st.markdown(f"**Finanzierungsbedarf (inkl. Nebenkosten & Co.):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
-    st.markdown(f"**Eigenkapital:** {eigenkapital:,.2f} €")
-    st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
-    st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
-    st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+    with st.spinner("Berechnung läuft..."):
+        st.markdown("## 📝 Ergebnis")
+        st.markdown(f"**Finanzierungsbedarf (inkl. Nebenkosten & Co.):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
+        st.markdown(f"**Eigenkapital:** {eigenkapital:,.2f} €")
+        st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
+        st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
+        st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+
 
 
