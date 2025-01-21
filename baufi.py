@@ -76,8 +76,6 @@ else:
 st.markdown("### Schritt 4: Eigenkapital und Bausparvertrag")
 eigenkapital = st.number_input("Eigenkapital (€):", min_value=0.0, step=1000.0)
 
-eigenkapitalanteil = (eigenkapital / finanzierungsbedarf_vor_abzuegen) * 100
-
 bausparer_option = st.radio("Möchten Sie einen Bausparvertrag einbringen?", ("Ja", "Nein"))
 if bausparer_option == "Ja":
     bausparsumme = st.number_input("Bausparsumme (€):", min_value=0.0, step=1000.0)
@@ -85,8 +83,6 @@ if bausparer_option == "Ja":
     bauspar_zuteilungsreif = st.radio("Ist der Bausparvertrag zuteilungsreif?", ("Ja", "Nein"))
     if bauspar_zuteilungsreif == "Ja":
         bauspar_darlehen = bausparsumme - angespart
-        bauspar_darlehenszins = st.number_input("Zinssatz des Bauspardarlehens (%):", min_value=0.0, step=0.1)
-        bauspar_tilgungssatz = st.number_input("Tilgungssatz des Bauspardarlehens (Promille):", min_value=0.0, step=0.1)
         bauspar_inanspruchnahme = st.radio("Möchten Sie das Bauspardarlehen in Anspruch nehmen?", ("Ja", "Nein"))
         if bauspar_inanspruchnahme == "Ja":
             finanzierungsbedarf_vor_abzuegen -= bausparsumme
@@ -96,6 +92,11 @@ if bausparer_option == "Ja":
             eigenkapital += angespart
     else:
         st.info("Der Bausparvertrag wird nicht in die Finanzierung einbezogen.")
+
+# Eigenkapitalanteil berechnen
+urspruenglicher_finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen
+
+eigenkapitalanteil = (eigenkapital / urspruenglicher_finanzierungsbedarf) * 100
 
 # Andere Darlehen
 st.markdown("### Schritt 5: Weitere Darlehen")
@@ -108,9 +109,9 @@ finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen - eigenkapital
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
     st.markdown("## 📝 Ergebnis")
-    st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {finanzierungsbedarf_vor_abzuegen:,.2f} €")
+    st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
     st.markdown(f"**Eigenkapital (inkl. ggf. Bausparvertrag):** {eigenkapital:,.2f} €")
-    st.markdown(f"**Eigenkapitalanteil:** {eigenkapitalanteil:.2f}%")
+    st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
     if bausparer_option == "Ja" and bauspar_zuteilungsreif == "Ja":
         st.markdown(f"**Bauspardarlehen:** {bauspar_darlehen:,.2f} €")
     st.markdown(f"**Weitere Darlehen:** {andere_darlehen:,.2f} €")
@@ -130,5 +131,6 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
 
