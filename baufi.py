@@ -1,150 +1,121 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-import numpy as np
-import random
-import time
+import math
 
-# Zinssatz basierend auf dem Kreditbetrag
-def get_interest_rate(kreditbetrag):
-    if 2500 <= kreditbetrag < 5000:
-        return 0.095
-    elif 5000 <= kreditbetrag < 10000:
-        return 0.079
-    elif 10000 <= kreditbetrag <= 50000:
-        return 0.068
+# Hilfsfunktion zum Runden auf die nächsten 1000€
+def runde_auf_1000(betrag):
+    return math.ceil(betrag / 1000) * 1000
+
+# Titel und Einleitung
+st.title("🏠 Baufinanzierungsrechner - Teil 1")
+st.markdown(
+    """
+    **Ermittlung des Finanzierungsbedarfs:**
+    Geben Sie die relevanten Informationen zu Ihrer Immobilie, den Nebenkosten und weiteren Ausgaben ein.
+    Danach wird Ihr gesamter Finanzierungsbedarf berechnet.
+    """
+)
+
+# Schritt 1: Immobilientyp wählen
+st.markdown("### Schritt 1: Immobilientyp auswählen")
+immobilientyp = st.radio(
+    "Welche Art von Immobilie möchten Sie finanzieren?",
+    ("Reines Grundstück", "Neubau", "Bestandsimmobilie")
+)
+st.caption("Wählen Sie den Immobilientyp, um die Nebenkosten korrekt zu berechnen.")
+
+# Eingabe des Kaufpreises
+if immobilientyp == "Neubau":
+    neubau_typ = st.radio(
+        "Handelt es sich um einen Neubau vom Bauträger oder einen Neubau mit Grundstückskauf?",
+        ("Neubau vom Bauträger", "Neubau mit Grundstückskauf")
+    )
+    if neubau_typ == "Neubau mit Grundstückskauf":
+        grundstueckspreis = st.number_input("Kaufpreis des Grundstücks (€):", min_value=0.0, step=1000.0)
+        bebauungskosten = st.number_input("Kosten für die Bebauung (€):", min_value=0.0, step=1000.0)
     else:
-        return None
+        kaufpreis = st.number_input("Gesamtkaufpreis (€):", min_value=0.0, step=1000.0)
+else:
+    kaufpreis = st.number_input("Kaufpreis (€):", min_value=0.0, step=1000.0)
 
-# Berechnung der monatlichen Rate (Annuität)
-def calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit):
-    r = zinssatz / 12
-    n = laufzeit * 12
-    annuitaet = kreditbetrag * (r * (1 + r)**n) / ((1 + r)**n - 1)
-    return annuitaet
+# Nebenkosten
+st.markdown("### Schritt 2: Nebenkosten eingeben")
+st.caption("Nebenkosten wie Notarkosten und Grunderwerbssteuer werden standardmäßig mit 2% bzw. 6% berechnet.")
 
-# Berechnung der Zins- und Tilgungsanteile über die Laufzeit
-def calculate_zins_tilgung(kreditbetrag, zinssatz, laufzeit, monatliche_rate):
-    zins_anteile = []
-    tilgungs_anteile = []
-    restschuld = kreditbetrag
+notarkosten_prozent = 2.0
+grunderwerbssteuer_prozent = 6.0
+maklercourtage = st.number_input("Maklercourtage (in %):", min_value=0.0, max_value=10.0, step=0.1)
 
-    for _ in range(laufzeit * 12):
-        zins = restschuld * (zinssatz / 12)  # Zinsen basierend auf jährlichem Zinssatz
-        tilgung = monatliche_rate - zins
-        restschuld -= tilgung
-        zins_anteile.append(zins)
-        tilgungs_anteile.append(tilgung)
+if immobilientyp == "Neubau" and neubau_typ == "Neubau mit Grundstückskauf":
+    notarkosten = grundstueckspreis * (notarkosten_prozent / 100)
+    grunderwerbssteuer = grundstueckspreis * (grunderwerbssteuer_prozent / 100)
+else:
+    notarkosten = kaufpreis * (notarkosten_prozent / 100)
+    grunderwerbssteuer = kaufpreis * (grunderwerbssteuer_prozent / 100)
 
-    return zins_anteile, tilgungs_anteile
+maklerkosten = kaufpreis * (maklercourtage / 100)
 
-# Funktion zur Auswahl einer Nachricht
-def get_motivational_message(differenz, kapitaldienst):
-    if differenz < 0:  # Wunschrate ist höher
-        return f"Die tatsächliche Rate ist **{abs(differenz):.2f} € niedriger** als Ihre Wunschrate. Eine großartige Nachricht für Ihr Budget! 💰"
-    else:  # Wunschrate ist niedriger
-        return f"Die Rate liegt zwar **{differenz:.2f} € über** Ihrer Wunschrate, aber Sie schaffen das – der Kapitaldienst passt! 💪 Ein kleiner Schritt mehr bringt Sie sicher ans Ziel! 🚀"
+# Weitere Kosten
+st.markdown("### Schritt 3: Zusätzliche Kosten eingeben")
+erschließungskosten = st.number_input("Erschließungskosten (€):", min_value=0.0, step=1000.0)
+hausanschlusskosten = st.number_input("Hausanschlusskosten (€):", min_value=0.0, step=1000.0)
+renovierungskosten = st.number_input("Renovierungs-/Modernisierungskosten (€):", min_value=0.0, step=1000.0)
+kueche_kosten = st.number_input("Kosten für Küche (€):", min_value=0.0, step=1000.0)
+aussenanlagen_kosten = st.number_input("Kosten für Außenanlagen (€):", min_value=0.0, step=1000.0)
 
-# Interaktive Eingaben
-st.title("🏠 Baufinanzierungsrechner")
-st.markdown("Berechnen Sie Ihre optimale monatliche Rate für Ihre Baufinanzierung und gewinnen Sie einen klaren Überblick über Zinsen und Tilgung! 📈")
+# Gesamtkosten berechnen
+st.markdown("### Berechnung des Finanzierungsbedarfs")
+nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
+weitere_kosten_summe = erschließungskosten + hausanschlusskosten + renovierungskosten + kueche_kosten + außenanlagen_kosten
 
-st.markdown("### 🛠️ Schritt 1: Finanzierungsbedarf eingeben")
-kreditbetrag = st.number_input("💰 Finanzierungsbedarf (€):", min_value=2500, max_value=50000, step=100)
+if immobilientyp == "Neubau" and neubau_typ == "Neubau mit Grundstückskauf":
+    finanzierungsbedarf = grundstueckspreis + bebauungskosten + nebkosten_summe + weitere_kosten_summe
+else:
+    finanzierungsbedarf = kaufpreis + nebkosten_summe + weitere_kosten_summe
 
-if kreditbetrag:
-    st.markdown("### 🛠️ Schritt 2: Laufzeit eingeben")
-    laufzeit = st.number_input("⏳ Gewünschte Laufzeit (in Jahren):", min_value=1, max_value=20, step=1)
+# Eigenkapital und Bausparvertrag
+st.markdown("### Schritt 4: Eigenkapital und Bausparvertrag")
+eigenkapital = st.number_input("Eigenkapital (€):", min_value=0.0, step=1000.0)
 
-if kreditbetrag and laufzeit:
-    st.markdown("### 🛠️ Schritt 3: Kapitaldienst eingeben")
-    kapitaldienst = st.number_input("🏦 Aktueller Kapitaldienst (€):", min_value=0.0, step=50.0)
-
-if kreditbetrag and laufzeit and kapitaldienst:
-    st.markdown("### 🛠️ Schritt 4: Wunschrate eingeben")
-    wunschrate = st.number_input("🎯 Wunschrate (€):", min_value=0.0, step=50.0)
-
-    st.markdown("### 🛠️ Schritt 5: Möchten Sie eine Restkreditversicherung (RKV) hinzufügen?")
-    rkv_option = st.radio("🔒 RKV-Option:", options=["Ja", "Nein"])
-
-# Berechnung erst starten, wenn alle Eingaben abgeschlossen sind
-if kreditbetrag and laufzeit and kapitaldienst and wunschrate and st.button("📊 Berechnung starten"):
-    with st.spinner("🔄 Berechnung wird durchgeführt..."):
-        time.sleep(2)  # Simulierte Ladezeit
-
-    zinssatz = get_interest_rate(kreditbetrag)
-    if zinssatz is None:
-        st.error("❌ Bitte geben Sie einen Kreditbetrag zwischen 2.500 € und 50.000 € ein.")
+bausparer_option = st.radio("Möchten Sie einen Bausparvertrag einbringen?", ("Ja", "Nein"))
+if bausparer_option == "Ja":
+    bausparsumme = st.number_input("Bausparsumme (€):", min_value=0.0, step=1000.0)
+    angespart = st.number_input("Bereits angespart (€):", min_value=0.0, step=1000.0)
+    bauspar_zuteilungsreif = st.radio("Ist der Bausparvertrag zuteilungsreif?", ("Ja", "Nein"))
+    if bauspar_zuteilungsreif == "Ja":
+        bauspar_darlehen = bausparsumme - angespart
+        bauspar_darlehenszins = st.number_input("Zinssatz des Bauspardarlehens (%):", min_value=0.0, step=0.1)
+        bauspar_tilgungssatz = st.number_input("Tilgungssatz des Bauspardarlehens (Promille):", min_value=0.0, step=0.1)
+        finanzierungsbedarf -= bausparsumme
+        eigenkapital += angespart
     else:
-        # Berechnungen
-        monatliche_rate = calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit)
+        st.info("Der Bausparvertrag wird nicht in die Finanzierung einbezogen.")
 
-        # Laufzeitverlängerung nur bei zu hohem Kapitaldienst
-        if monatliche_rate > kapitaldienst:
-            original_laufzeit = laufzeit
-            while monatliche_rate > kapitaldienst and laufzeit < 30:
-                laufzeit += 1
-                monatliche_rate = calculate_monthly_rate(kreditbetrag, zinssatz, laufzeit)
-            if monatliche_rate > kapitaldienst:
-                st.error("❌ Selbst bei einer Laufzeit von 30 Jahren passt die Rate nicht in den Kapitaldienst.")
-            elif laufzeit > original_laufzeit:
-                st.markdown(
-                    f"<span style='color: red;'>⚠️ Die gewünschte Laufzeit wurde auf **{laufzeit} Jahre** verlängert, "
-                    f"damit die monatliche Rate in den Kapitaldienst passt.</span>",
-                    unsafe_allow_html=True
-                )
+# Andere Darlehen
+st.markdown("### Schritt 5: Weitere Darlehen")
+andere_darlehen = st.number_input("Haben Sie weitere Darlehen aufgenommen? Falls ja, bitte Betrag eingeben (€):", min_value=0.0, step=1000.0)
+finanzierungsbedarf -= andere_darlehen
 
-        zins_anteile, tilgungs_anteile = calculate_zins_tilgung(kreditbetrag, zinssatz, laufzeit, monatliche_rate)
-        gesamtzins = sum(zins_anteile)
-        gesamtaufwand = gesamtzins + kreditbetrag
+# Ergebnisse anzeigen
+if st.button("Ergebnis anzeigen"):
+    st.markdown("## 📝 Ergebnis")
+    st.markdown(f"**Finanzierungsbedarf (inkl. aller Nebenkosten):** {finanzierungsbedarf:,.2f} €")
+    st.markdown(f"**Eigenkapital (inkl. ggf. Bausparvertrag):** {eigenkapital:,.2f} €")
+    if bausparer_option == "Ja" and bauspar_zuteilungsreif == "Ja":
+        st.markdown(f"**Bauspardarlehen:** {bauspar_darlehen:,.2f} €")
+    st.markdown(f"**Weitere Darlehen:** {andere_darlehen:,.2f} €")
+    st.markdown(f"**Finanzierungsbedarf (aufgerundet):** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
 
-        # Vergleich der Wunschrate
-        differenz = monatliche_rate - wunschrate
-        if differenz < 0:  # Positive Nachricht in Grün
-            st.markdown(
-                f"<span style='color: green;'>✅ Die tatsächliche Rate ist **{abs(differenz):.2f} € niedriger** als Ihre Wunschrate. "
-                f"Eine großartige Nachricht für Ihr Budget! 💰</span>",
-                unsafe_allow_html=True
-            )
-        else:  # Ermutigende Nachricht in Gelb
-            st.markdown(
-                f"<span style='color: orange;'>⚠️ Die Rate liegt zwar **{differenz:.2f} € über** Ihrer Wunschrate, aber Sie schaffen das – der Kapitaldienst passt! 💪 "
-                f"Ein kleiner Schritt mehr bringt Sie sicher ans Ziel! 🚀</span>",
-                unsafe_allow_html=True
-            )
-
-        # Ergebnisse übersichtlich darstellen
-        st.markdown("## 📋 Ergebnisse")
-        st.markdown(
-            f"""
-            ### 💵 Monatliche Rate (ohne RKV)
-            **{monatliche_rate:.2f} €**
-            *Der Betrag, den Sie monatlich ohne zusätzliche Absicherung zahlen würden.*
-
-            ### 🔒 Monatliche Rate (mit Restkreditversicherung)
-            **{monatliche_rate + kreditbetrag * 0.00273:.2f} €**
-            *Mit zusätzlicher Absicherung (RKV) erhöht sich die monatliche Rate leicht.*
-
-            ### 🔍 Zinssatz
-            **{zinssatz * 100:.2f}%**
-            *Der Zinssatz bleibt über die gesamte Laufzeit konstant.*
-
-            ### 📉 Gesamter Zinsaufwand
-            **{gesamtzins:,.2f} €**
-            *Die gesamten Kosten durch Zinsen während der Laufzeit.*
-
-            ### 💸 Gesamtaufwand (Kreditbetrag + Zinsen)
-            **{gesamtaufwand:,.2f} €**
-            *Die Gesamtsumme aller Zahlungen während der Laufzeit.*
-            """
-        )
-
-        # Visualisierung: Zins- und Tilgungsanteile über die gesamte Laufzeit
-        fig, ax = plt.subplots(figsize=(10, 4))
-        x = np.arange(1, len(zins_anteile) + 1)  # Gesamte Laufzeit
-        ax.bar(x, zins_anteile, label="Zinsen", color="gray", alpha=0.7)
-        ax.bar(x, tilgungs_anteile, bottom=zins_anteile, label="Tilgung", color="orange", alpha=0.9)
-        ax.set_title("Zins- und Tilgungsanteile über die gesamte Laufzeit", fontsize=14)
-        ax.set_xlabel("Monat", fontsize=12)
-        ax.set_ylabel("Betrag (€)", fontsize=12)
-        ax.legend()
-        st.pyplot(fig)
+    # Visualisierung
+    labels = ["Nebenkosten", "Weitere Kosten", "Eigenkapital", "Darlehen"]
+    sizes = [
+        nebkosten_summe,
+        weitere_kosten_summe,
+        eigenkapital,
+        finanzierungsbedarf - eigenkapital - nebkosten_summe - weitere_kosten_summe
+    ]
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90)
+    ax.axis("equal")
+    plt.title("Aufteilung der Finanzierungskosten")
+    st.pyplot(fig)
