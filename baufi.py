@@ -103,10 +103,8 @@ if bausparer_option == "Ja":
 # Prüfen, ob der ursprüngliche Finanzierungsbedarf größer als 0 ist
 if finanzierungsbedarf_vor_abzuegen > 0:
     urspruenglicher_finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen
-    eigenkapitalanteil = (eigenkapital / urspruenglicher_finanzierungsbedarf) * 100
 else:
     urspruenglicher_finanzierungsbedarf = 0
-    eigenkapitalanteil = 0
 
 # Endgültiger Finanzierungsbedarf
 finanzierungsbedarf = max(urspruenglicher_finanzierungsbedarf - eigenkapital, 0)
@@ -114,12 +112,12 @@ finanzierungsbedarf = max(urspruenglicher_finanzierungsbedarf - eigenkapital, 0)
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
     with st.spinner("Berechnung läuft..."):
-        st.markdown("## 📝 Ergebnis")
-        st.markdown(f"**Finanzierungsbedarf (inkl. Nebenkosten & Co.):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
-        st.markdown(f"**Eigenkapital:** {eigenkapital:,.2f} €")
-        st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
-        st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
-        st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+        import time
+        time.sleep(2)  # Simulierte Ladezeit
+    st.markdown("## 📝 Ergebnis")
+    st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
+    st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+
 
 
 
