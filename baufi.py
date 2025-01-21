@@ -50,7 +50,7 @@ st.caption("Nebenkosten wie Notarkosten und Grunderwerbssteuer werden standardm�
 notarkosten_prozent = 2.0
 grunderwerbssteuer_prozent = 6.0
 maklercourtage = st.number_input(
-    "Maklercourtage (in %):", min_value=0.0, max_value=10.0, step=0.1, format="%.1f"
+    "Maklercourtage (in %):", min_value=0.00, max_value=10.00, step=0.01, format="%.2f"
 )
 
 if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
@@ -120,6 +120,7 @@ if st.button("Ergebnis anzeigen"):
         st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
         st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
         st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+
 
 
 
