@@ -86,8 +86,13 @@ if bausparer_option == "Ja":
         bauspar_darlehen = bausparsumme - angespart
         bauspar_darlehenszins = st.number_input("Zinssatz des Bauspardarlehens (%):", min_value=0.0, step=0.1)
         bauspar_tilgungssatz = st.number_input("Tilgungssatz des Bauspardarlehens (Promille):", min_value=0.0, step=0.1)
-        finanzierungsbedarf -= bausparsumme
-        eigenkapital += angespart
+        bauspar_inanspruchnahme = st.radio("Möchten Sie das Bauspardarlehen in Anspruch nehmen?", ("Ja", "Nein"))
+        if bauspar_inanspruchnahme == "Ja":
+            finanzierungsbedarf -= bausparsumme
+            eigenkapital += angespart
+        else:
+            finanzierungsbedarf -= angespart
+            eigenkapital += angespart
     else:
         st.info("Der Bausparvertrag wird nicht in die Finanzierung einbezogen.")
 
@@ -119,5 +124,6 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
 
