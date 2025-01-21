@@ -1,5 +1,4 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 import math
 
 # Hilfsfunktion zum Runden auf die nächsten 1000€
@@ -99,19 +98,6 @@ if st.button("Ergebnis anzeigen"):
     st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
     st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
 
-    # Visualisierung
-    labels = ["Nebenkosten", "Weitere Kosten", "Eigenkapital", "Darlehen"]
-    sizes = [
-        nebenkosten_summe,
-        weitere_kosten_summe,
-        eigenkapital,
-        finanzierungsbedarf
-    ]
-    fig, ax = plt.subplots()
-    ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90)
-    ax.axis("equal")
-    plt.title("Aufteilung der Finanzierungskosten")
-    st.pyplot(fig)
 
 
 
