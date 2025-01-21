@@ -57,7 +57,7 @@ maklerkosten = kaufpreis * (maklercourtage / 100)
 
 # Weitere Kosten
 st.markdown("### Schritt 3: Zusätzliche Kosten eingeben")
-erschließungskosten = st.number_input("Erschließungskosten (€):", min_value=0.0, step=1000.0)
+erschliessungskosten = st.number_input("Erschließungskosten (€):", min_value=0.0, step=1000.0)
 hausanschlusskosten = st.number_input("Hausanschlusskosten (€):", min_value=0.0, step=1000.0)
 renovierungskosten = st.number_input("Renovierungs-/Modernisierungskosten (€):", min_value=0.0, step=1000.0)
 kueche_kosten = st.number_input("Kosten für Küche (€):", min_value=0.0, step=1000.0)
@@ -66,7 +66,7 @@ aussenanlagen_kosten = st.number_input("Kosten für Außenanlagen (€):", min_v
 # Gesamtkosten berechnen
 st.markdown("### Berechnung des Finanzierungsbedarfs")
 nebkosten_summe = notarkosten + grunderwerbssteuer + maklerkosten
-weitere_kosten_summe = erschließungskosten + hausanschlusskosten + renovierungskosten + kueche_kosten + außenanlagen_kosten
+weitere_kosten_summe = erschliessungskosten + hausanschlusskosten + renovierungskosten + kueche_kosten + aussenanlagen_kosten
 
 if immobilientyp == "Neubau" and neubau_typ == "Neubau und Grundstückskauf separat":
     finanzierungsbedarf = grundstueckspreis + bebauungskosten + nebkosten_summe + weitere_kosten_summe
@@ -119,4 +119,5 @@ if st.button("Ergebnis anzeigen"):
     ax.axis("equal")
     plt.title("Aufteilung der Finanzierungskosten")
     st.pyplot(fig)
+
 
