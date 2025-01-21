@@ -21,7 +21,6 @@ immobilientyp = st.radio(
     "Welche Art von Immobilie möchten Sie finanzieren?",
     ("Reines Grundstück", "Neubau", "Bestandsimmobilie")
 )
-st.caption("Wählen Sie den Immobilientyp, um die Nebenkosten korrekt zu berechnen.")
 
 # Eingabe des Kaufpreises
 if immobilientyp == "Neubau":
@@ -39,8 +38,6 @@ else:
 
 # Nebenkosten
 st.markdown("### Schritt 2: Nebenkosten eingeben")
-st.caption("Nebenkosten wie Notarkosten und Grunderwerbssteuer werden standardmäßig mit 2% bzw. 6% berechnet.")
-
 notarkosten_prozent = 2.0
 grunderwerbssteuer_prozent = 6.0
 maklercourtage = st.number_input("Maklercourtage (in %):", min_value=0.0, max_value=10.0, step=0.1)
@@ -82,21 +79,15 @@ if bausparer_option == "Ja":
     bausparsumme = st.number_input("Bausparsumme (€):", min_value=0.0, step=1000.0)
     finanzierungsbedarf_vor_abzuegen -= bausparsumme
 
-# Eigenkapitalanteil berechnen
-urspruenglicher_finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen
-eigenkapitalanteil = (eigenkapital / urspruenglicher_finanzierungsbedarf) * 100
-
 # Endgültiger Finanzierungsbedarf
 finanzierungsbedarf = finanzierungsbedarf_vor_abzuegen - eigenkapital
 
 # Ergebnisse anzeigen
 if st.button("Ergebnis anzeigen"):
     st.markdown("## 📝 Ergebnis")
-    st.markdown(f"**Finanzierungsbedarf (inkl. Nebenkosten & Co.):** {urspruenglicher_finanzierungsbedarf:,.2f} €")
-    st.markdown(f"**Eigenkapital:** {eigenkapital:,.2f} €")
-    st.markdown(f"**Eigenkapitalanteil am ursprünglichen Finanzierungsbedarf:** {eigenkapitalanteil:.2f}%")
     st.markdown(f"**Endgültiger Finanzierungsbedarf:** {finanzierungsbedarf:,.2f} €")
     st.markdown(f"**Aufgerundeter Finanzierungsbedarf:** {runde_auf_1000(finanzierungsbedarf):,.2f} €")
+
 
 
 
